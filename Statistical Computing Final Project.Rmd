@@ -1,0 +1,93 @@
+---
+title: "MATH 208 Final Project"
+date: "12/4/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+```
+
+Task 1
+```{r}
+Happiness <- read.csv("https://usercontent.crowdmark.com/9a3a09ad-9b25-49d5-86bf-9b91662952cf.csv")
+class(Happiness)
+year2019 <- Happiness[Happiness$Year == 2019,]
+
+ggplot(year2019,aes(x=GDPperCap,y=Region)) + geom_point() + labs(x="Region",col="GDPperCap") + geom_smooth() + geom_line()
+
+ggplot(year2019,aes(x=GDPperCap)) + geom_histogram() + facet_wrap(~Region)
+
+ggplot(year2019,aes(x=Region,y=GDPperCap)) + geom_boxplot()
+ggplot(year2019,aes(x=Region,y=TrustGov)) + geom_boxplot()
+ggplot(year2019,aes(x=Region,y=Family)) + geom_boxplot()
+ggplot(year2019,aes(x=Region,y=Freedom)) + geom_boxplot()
+ggplot(year2019,aes(x=Region,y=HealthLifeExp)) + geom_boxplot()
+ggplot(year2019,aes(x=Region,y=Generosity)) + geom_boxplot()
+```
+
+```{r 2}
+Happiness_S <- Happiness %>% mutate(Happiness_Score = GDPperCap + TrustGov + Family + Freedom + HealthLifeExp + Generosity)
+
+summary(Happiness_S$Happiness_Score)
+Happiness_S %>% select(Country, Happiness_Score) %>% group_by(Happiness_S$Year)
+
+```
+
+```{r 3}
+
+library(tidyr)
+Happiness_S <- Happiness %>% mutate(Happiness_Score = GDPperCap + TrustGov + Family + Freedom + HealthLifeExp + Generosity)
+
+newhap <- Happiness_S %>% drop_na()
+ss2015 <- subset(newhap,Year == '2015')
+s2015 <- aggregate(x = ss2015,by = list(as.factor(ss2015$Region)),FUN = "max")
+s2015_1 <- rename(s2015,Region_Name = Group.1)
+ggplot(s2015_1,aes(Region_Name,Happiness_Score)) + geom_point(aes(color = Region_Name),size = 3) + geom_segment(aes(x = Region_Name,xend = Region_Name,y = 0,yend = Happiness_Score)) + theme(axis.text.x = element_text(angle = 90)) + ggtitle("Highest Happiness Score by Region for Year 2015")
+
+ss2016 <- subset(newhap,Year == '2016')
+s2016 <- aggregate(x = ss2016,by = list(as.factor(ss2015$Region)),FUN = "max")
+s2016_1 <- rename(s2016,Region_Name = Group.1)
+ggplot(s2016_1,aes(Region_Name,Happiness_Score)) + geom_point(aes(color = Region_Name),size = 3) + geom_segment(aes(x = Region_Name,xend = Region_Name,y = 0,yend = Happiness_Score)) + theme(axis.text.x = element_text(angle = 90)) + ggtitle("Highest Happiness Score by Region for Year 2016")
+
+ss2017 <- subset(newhap,Year == '2017')
+s2017 <- aggregate(x = ss2017,by = list(as.factor(ss2017$Region)),FUN = "max")
+s2017_1 <- rename(s2017,Region_Name = Group.1)
+ggplot(s2017_1,aes(Region_Name,Happiness_Score)) + geom_point(aes(color = Region_Name),size = 3) + geom_segment(aes(x = Region_Name,xend = Region_Name,y = 0,yend = Happiness_Score)) + theme(axis.text.x = element_text(angle = 90)) + ggtitle("Highest Happiness Score by Region for Year 2017")
+
+ss2018 <- subset(newhap,Year == '2018')
+s2018 <- aggregate(x = ss2018,by = list(as.factor(ss2018$Region)),FUN = "max")
+s2018_1 <- rename(s2018,Region_Name = Group.1)
+ggplot(s2018_1,aes(Region_Name,Happiness_Score)) + geom_point(aes(color = Region_Name),size = 3) + geom_segment(aes(x = Region_Name,xend = Region_Name,y = 0,yend = Happiness_Score)) + theme(axis.text.x = element_text(angle = 90)) + ggtitle("Highest Happiness Score by Region for Year 2018")
+
+ss2019 <- subset(newhap,Year == '2019')
+s2019 <- aggregate(x = ss2019,by = list(as.factor(ss2019$Region)),FUN = "max")
+s2019_1 <- rename(s2019,Region_Name = Group.1)
+ggplot(s2019_1,aes(Region_Name,Happiness_Score)) + geom_point(aes(color = Region_Name),size = 3) + geom_segment(aes(x = Region_Name,xend = Region_Name,y = 0,yend = Happiness_Score)) + theme(axis.text.x = element_text(angle = 90)) + ggtitle("Highest Happiness Score by Region for Year 2019")
+
+```
+
+
+```{r 4}
+Happiness_S <- Happiness %>% mutate(Happiness_Score = GDPperCap + TrustGov + Family + Freedom + HealthLifeExp + Generosity)
+Happiness_Ss <- Happiness_S %>% drop_na()
+
+
+tem <- aggregate(x = Happiness_Ss$Happiness_Score,
+          by = list(Happiness_Ss$Country),
+          FUN=sum) %>% mutate(Average = 0.2*x) %>% arrange(desc(Average)) %>% slice(1:10)
+teem <- tem %>% select(Group.1, Average)
+colnames(teem) <- c("Country","Average")
+teem
+```
+
+```{r 5}
+ss2019
+ss2015
+
+ss2019 %>% mutate(Difference = ss2019$Happiness_Score - ss2015$Happiness_Score) %>% arrange(desc(Difference)) %>% slice(1:10) %>% select(Country, Difference)
+```
+
